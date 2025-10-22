@@ -5,6 +5,13 @@ type: application
 resources:
   configuration:
     propertiesFileSourceEncoding: UTF-8
+    # Exclude test and documentation files from production build
+    excludes:
+      - "**/test*.html"
+      - "**/test*.js"
+      - "**/*.md"
+      # Optionally exclude mock server files (comment out to keep them)
+      # - "**/localService/**"
 builder:
   customTasks:
     - name: webide-extension-task-updateManifestJson

@@ -10,7 +10,9 @@
       "Bash(npm install:*)",
       "Bash(npm start)",
       "Bash(curl:*)",
-      "Bash(pkill:*)"
+      "Bash(pkill:*)",
+      "Bash(git push:*)",
+      "Bash(git remote get-url:*)"
     ],
     "deny": [],
     "ask": []
