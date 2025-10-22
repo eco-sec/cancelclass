@@ -47,6 +47,7 @@ The application will open at **http://localhost:8080** with **full mock data** e
 |----------|-------------|
 | [CLAUDE.md](./CLAUDE.md) | Complete architecture and development guide |
 | [MOCK_SERVER_GUIDE.md](./MOCK_SERVER_GUIDE.md) | **Reusable mock server implementation for any SAP UI5 app** |
+| [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md) | **Production deployment (mock auto-disables, no changes needed!)** |
 | [TESTING_GUIDE.md](./TESTING_GUIDE.md) | Comprehensive testing workflows and verification |
 | [LOCAL_TESTING.md](./LOCAL_TESTING.md) | Local testing scenarios and troubleshooting |
 | [QUICK_START.md](./QUICK_START.md) | Quick reference for common tasks |
@@ -187,18 +188,33 @@ All endpoints are **fully mocked** for local development.
 
 ## 🚢 Deployment
 
-### SAP BTP Deployment
+### Production Deployment
 
-The application is designed for deployment on:
-- SAP Business Technology Platform (BTP)
-- SAP HANA Cloud Platform
-- SAP WebIDE / Business Application Studio
+**No changes needed!** The mock server automatically disables itself in production.
 
-Mock server automatically detects production environment and disables itself.
+```bash
+# Build for production
+npm run build
 
-### Environment Variables
+# Deploy dist/ folder to SAP BTP/Neo
+# Mock server automatically detects environment and stays disabled
+```
 
-No configuration required - automatic detection based on `window.location.hostname`
+### Supported Platforms
+
+- ✅ SAP Business Technology Platform (Cloud Foundry)
+- ✅ SAP Neo Platform
+- ✅ SAP HANA Cloud Platform
+- ✅ SAP WebIDE / Business Application Studio
+
+### Environment Detection
+
+| Environment | Mock Status |
+|-------------|-------------|
+| `localhost` / `127.0.0.1` | ✅ Enabled |
+| Production domains | ❌ Disabled |
+
+**See [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md) for complete deployment instructions.**
 
 ## 📄 License
 
