@@ -89,9 +89,19 @@ sap.ui.define([
 			EmployeeService.getSubordinates(this.username).then(function (oData) {
 				var aSubordinates = (oData && oData.EmployeeHierarchySet && oData.EmployeeHierarchySet.EmployeeHierarchy) ? oData.EmployeeHierarchySet
 					.EmployeeHierarchy : [];
+
+				// Set subordinates model
 				that._onBehalfSubordinateDialog.setModel(new JSONModel({
 					EmployeeList: aSubordinates
 				}), "subordinateModel");
+
+				// Initialize empty selected subordinate model
+				that._onBehalfSubordinateDialog.setModel(new JSONModel({
+					EmpPernr: "",
+					EmpEnglishName: "",
+					displayText: ""
+				}), "selectedSubordinate");
+
 				that._onBehalfSubordinateDialog.open();
 			}).catch(function (oError) {
 				console.error("Error fetching subordinates", oError);

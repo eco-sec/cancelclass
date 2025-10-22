@@ -5,9 +5,10 @@
 			<Input
 				id="subordinateInput"
 				width="100%"
-				placeholder="Search subordinate by ID or name..."
+				placeholder="Click search icon to select subordinate..."
 				showValueHelp="true"
 				valueHelpRequest="onSubordinateValueHelp"
+				valueHelpOnly="false"
 				value="{selectedSubordinate>/displayText}"
 				required="true"
 				editable="false"/>
