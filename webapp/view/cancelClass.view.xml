@@ -1,0 +1,29 @@
+<mvc:View xmlns:mvc="sap.ui.core.mvc"
+          xmlns="sap.m"
+          controllerName="cancelclass.cancelclass.controller.cancelClass"
+          displayBlock="true">
+
+    <Shell id="shell">
+        <App id="app">
+            <pages>
+                <Page id="page" title="Cancel Class">
+                    <content>
+                        <VBox class="sapUiSmallMargin">
+                            <Toolbar>
+                                <Title text="Cancel Class Management" level="H2"/>
+                                <ToolbarSpacer/>
+                            </Toolbar>
+
+                            <HBox justifyContent="Center" alignItems="Center" class="sapUiSmallMarginTop sapUiSmallMarginBottom">
+                                <Button text="Cancel My Class" press="onCancelMyClass" type="Emphasized" class="sapUiTinyMarginEnd"/>
+                                <Button text="Cancel On Behalf" press="onCreateOnBehalf" type="Emphasized"/>
+                            </HBox>
+
+                        </VBox>
+                    </content>
+                </Page>
+            </pages>
+        </App>
+    </Shell>
+
+</mvc:View>

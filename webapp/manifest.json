@@ -1,0 +1,125 @@
+{
+	"_version": "1.12.0",
+	"sap.app": {
+		"id": "cancelclass.cancelclass",
+		"type": "application",
+		"i18n": "i18n/i18n.properties",
+		"dataSources": {
+			"currentUserSource": {
+				"uri": "/scpServices/userAPI/currentUser",
+				"type": "JSON"
+			},
+			"businessEventService": {
+				"uri": "lmsproject/hana/xsodata/BusinessEventService.xsodata/",
+				"type": "OData",
+				"settings": {
+					"odataVersion": "2.0"
+				}
+			}
+		},
+		"applicationVersion": {
+			"version": "1.0.0"
+		},
+		"crossNavigation": {
+			"inbounds": {
+				"intent1": {
+					"semanticObject": "BusinessBehalf",
+					"action": "Display"
+				}
+			}
+		},
+		"title": "{{appTitle}}",
+		"description": "{{appDescription}}",
+		"sourceTemplate": {
+			"id": "ui5template.basicSAPUI5ApplicationProject",
+			"version": "1.40.12"
+		}
+	},
+	"sap.ui": {
+		"technology": "UI5",
+		"icons": {
+			"icon": "",
+			"favIcon": "",
+			"phone": "",
+			"phone@2": "",
+			"tablet": "",
+			"tablet@2": ""
+		},
+		"deviceTypes": {
+			"desktop": true,
+			"tablet": true,
+			"phone": true
+		}
+	},
+	"sap.ui5": {
+		"flexEnabled": false,
+		"rootView": {
+			"viewName": "cancelclass.cancelclass.view.cancelClass",
+			"type": "XML",
+			"async": true
+		},
+		"dependencies": {
+			"minUI5Version": "1.65.6",
+			"libs": {
+				"sap.ui.layout": {},
+				"sap.ui.core": {},
+				"sap.m": {}
+			}
+		},
+		"contentDensities": {
+			"compact": true,
+			"cozy": true
+		},
+		"models": {
+			"i18n": {
+				"type": "sap.ui.model.resource.ResourceModel",
+				"settings": {
+					"bundleName": "cancelclass.cancelclass.i18n.i18n"
+				}
+			},
+			"currentUser": {
+				"dataSource": "currentUserSource",
+				"preload": true
+			}
+		},
+		"resources": {
+			"css": [
+				{
+					"uri": "css/style.css"
+				}
+			]
+		},
+		"routing": {
+			"config": {
+				"routerClass": "sap.m.routing.Router",
+				"viewType": "XML",
+				"async": true,
+				"viewPath": "cancelclass.cancelclass.view",
+				"controlAggregation": "pages",
+				"controlId": "app",
+				"clearControlAggregation": false
+			},
+			"routes": [
+				{
+					"pattern": "",
+					"name": "cancelClass",
+					"target": "cancelClass"
+				}
+			],
+			"targets": {
+				"cancelClass": {
+					"viewType": "XML",
+					"transition": "slide",
+					"clearControlAggregation": false,
+					"viewId": "cancelClass",
+					"viewName": "cancelClass",
+					"viewLevel": 0
+				}
+			}
+		}
+	},
+	"sap.platform.hcp": {
+		"uri": "webapp",
+		"_version": "1.1.0"
+	}
+}

@@ -1,0 +1,58 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core">
+	<Dialog id="workflowDetailsDialog" title="Class Details" draggable="true" resizable="true">
+		<VBox class="sapUiSmallMargin">
+			<Label text="Employee Name:"/>
+			<Text text="{workflow>EMPLOYEE_NAME}"/>
+			<Label text="Employee Email:"/>
+			<Text text="{workflow>EMPLOYEE_EMAIL}"/>
+			<Label text="Class ID:"/>
+			<Text text="{workflow>CLASS_ID}"/>
+			<Label text="Class Title:"/>
+			<Text text="{workflow>CLASS_TITLE}"/>
+			<Label text="Class Start Date:"/>
+			<Text text="{workflow>/FORMATTED_CLASS_START_DATE}"/>
+			<Label text="Class End Date:"/>
+			<Text text="{workflow>/FORMATTED_CLASS_END_DATE}"/>
+			<Label text="Days to Start:"/>
+			<Text text="{workflow>/DAYS_LEFT}"/>
+			<Label text="Cancellation Status:"/>
+			<Text text="{workflow>/CANCEL_REASON}"/>
+			<!-- 🆕 Dropdown for Cancellation Reason -->
+			<Label text="Select Cancellation Reason:"/>
+			<ComboBox id="cancelReasonComboBox" selectedKey="Work Commitments">
+				<items>
+					<core:Item key="Administrative Decisions" text="Administrative Decisions - قرارات إدارية"/>
+					<core:Item key="Advanced Certification" text="Advanced Certification - شهادة متقدمة"/>
+					<core:Item key="Conflicting Events" text="Conflicting Events - تعارض في الأحداث"/>
+					<core:Item key="Exception Granted" text="Exception Granted - استثناء ممنوح"/>
+					<core:Item key="Exceptional Performance" text="Exceptional Performance - أداء استثنائي"/>
+					<core:Item key="Extended Leave" text="Extended Leave - إجازة طويلة"/>
+					<core:Item key="Family Emergency" text="Family Emergency - حالة طوارئ عائلية"/>
+					<core:Item key="Job Role Change" text="Job Role Change - تغيير في الدور الوظيفي"/>
+					<core:Item key="Lack of Prerequisites" text="Lack of Prerequisites - نقص في المتطلبات الأساسية"/>
+					<core:Item key="Low Enrollment" text="Low Enrollment - تسجيل منخفض"/>
+					<core:Item key="Overdue Training" text="Overdue Training - تدريب متأخر"/>
+					<core:Item key="Personal Reasons" text="Personal Reasons - أسباب شخصية"/>
+					<core:Item key="Sudden Illness" text="Sudden Illness - مرض مفاجئ"/>
+					<core:Item key="Timing or Duration Issues" text="Timing or Duration Issues - مشكلات في التوقيت أو المدة"/>
+					<core:Item key="Travel Obligations" text="Travel Obligations - التزامات سفر"/>
+					<core:Item key="Work Commitments" text="Work Commitments - التزامات وظيفية"/>
+					<core:Item key="End of service" text="End of service - انتهاء خدمة"/>
+				</items>
+			</ComboBox>
+			<!-- Add any other fields you want -->
+		</VBox>
+		<beginButton>
+			<Button id="cancelClassButton" text="Cancel Class" type="Reject" press="onCancelClassConfirm"
+				visible="{= ${workflow>/IS_ON_BEHALF} === true }" enabled="{workflow>/ENABLE_CANCEL_BUTTON}"/>
+		</beginButton>
+		<endButton>
+			<Button text="Close" press="onCloseWorkflowDialog"/>
+		</endButton>
+		<Text id="cancelInfoText" text="Please contact your supervisor or training coordinator to cancel this class."
+			visible="{= ${workflow>/IS_ON_BEHALF} === false }" class="sapUiSmallMarginTop sapUiSmallMarginBottom sapUiTinyMargin"/>
+		<endButton>
+			<Button text="Close" press="onCloseWorkflowDialog"/>
+		</endButton>
+	</Dialog>
+</core:FragmentDefinition>
