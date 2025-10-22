@@ -195,14 +195,76 @@ sap.ui.define([
 			// Dialog closes automatically
 		},
 
+		onClassValueHelp: function () {
+			var that = this;
+
+			// Create Value Help dialog if not exists
+			if (!this._classValueHelpDialog) {
+				this._classValueHelpDialog = sap.ui.xmlfragment(
+					"cancelclass.cancelclass.fragment.ClassValueHelp",
+					this
+				);
+				this.getView().addDependent(this._classValueHelpDialog);
+			}
+
+			// Get classes from the existing model
+			var oModel = this._onBehalfSubordinateDialog.getModel("classModel");
+			this._classValueHelpDialog.setModel(oModel, "classModel");
+
+			// Open the dialog
+			this._classValueHelpDialog.open();
+		},
+
+		onClassSearch: function (oEvent) {
+			var sValue = oEvent.getParameter("value");
+			var oFilter = new Filter({
+				filters: [
+					new Filter("CLASS_ID", FilterOperator.Contains, sValue),
+					new Filter("CLASS_TITLE", FilterOperator.Contains, sValue)
+				],
+				and: false
+			});
+			var oBinding = oEvent.getSource().getBinding("items");
+			oBinding.filter([oFilter]);
+		},
+
+		onClassConfirm: function (oEvent) {
+			var oSelectedItem = oEvent.getParameter("selectedItem");
+			if (oSelectedItem) {
+				var oContext = oSelectedItem.getBindingContext("classModel");
+				var oClass = oContext.getObject();
+
+				// Set selected class in input field
+				var oInput = sap.ui.getCore().byId("classInput");
+				var sDisplayText = oClass.CLASS_ID + " - " + oClass.CLASS_TITLE;
+
+				// Create/Update model for selected class
+				if (!this._onBehalfSubordinateDialog.getModel("selectedClass")) {
+					this._onBehalfSubordinateDialog.setModel(new JSONModel(), "selectedClass");
+				}
+				this._onBehalfSubordinateDialog.getModel("selectedClass").setData({
+					CLASS_ID: oClass.CLASS_ID,
+					CLASS_TITLE: oClass.CLASS_TITLE,
+					displayText: sDisplayText,
+					fullClassData: oClass
+				});
+			}
+		},
+
+		onClassCancel: function () {
+			// Dialog closes automatically
+		},
+
 		_loadClassesForSubordinate: function (sEmpId) {
+			var that = this;
 			if (!sEmpId) return;
 
 			sEmpId = sEmpId.replace(/^0+/, '');
 
 			BusinessEventService.getClassByEmployee(sEmpId).then(function (oData) {
 				var aClasses = (oData && oData.d && oData.d.results) ? oData.d.results : [];
-				sap.ui.getCore().byId("classSelect").setModel(new JSONModel({
+				// Set model on the dialog instead of the control
+				that._onBehalfSubordinateDialog.setModel(new JSONModel({
 					ClassList: aClasses
 				}), "classModel");
 			}).catch(function (err) {
@@ -248,8 +310,9 @@ sap.ui.define([
 			var oSelectedSubModel = this._onBehalfSubordinateDialog.getModel("selectedSubordinate");
 			var sEmployeeId = oSelectedSubModel ? oSelectedSubModel.getProperty("/EmpPernr") : null;
 
-			// Get selected class
-			var sClassId = sap.ui.getCore().byId("classSelect").getSelectedKey();
+			// Get selected class from Value Help
+			var oSelectedClassModel = this._onBehalfSubordinateDialog.getModel("selectedClass");
+			var sClassId = oSelectedClassModel ? oSelectedClassModel.getProperty("/CLASS_ID") : null;
 
 			if (sEmployeeId && sClassId) {
 				sEmployeeId = sEmployeeId.replace(/^0+/, '');
@@ -376,8 +439,17 @@ sap.ui.define([
 		},
 
 		onCancelOnBehalf: function () {
+			// Clear selected models
+			if (this._onBehalfSubordinateDialog) {
+				if (this._onBehalfSubordinateDialog.getModel("selectedSubordinate")) {
+					this._onBehalfSubordinateDialog.getModel("selectedSubordinate").setData({});
+				}
+				if (this._onBehalfSubordinateDialog.getModel("selectedClass")) {
+					this._onBehalfSubordinateDialog.getModel("selectedClass").setData({});
+				}
+				this._onBehalfSubordinateDialog.close();
+			}
 			if (this._onBehalfDialog) this._onBehalfDialog.close();
-			if (this._onBehalfSubordinateDialog) this._onBehalfSubordinateDialog.close();
 		},
 
 		onCancelClassConfirm: function () {

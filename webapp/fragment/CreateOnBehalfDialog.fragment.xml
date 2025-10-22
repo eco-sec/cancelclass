@@ -7,15 +7,22 @@
 				width="100%"
 				placeholder="Click search icon to select subordinate..."
 				showValueHelp="true"
-				valueHelpRequest="onSubordinateValueHelp"
+				valueHelpRequest=".onSubordinateValueHelp"
 				valueHelpOnly="false"
 				value="{selectedSubordinate>/displayText}"
 				required="true"
-				editable="false"/>
+				editable="true"/>
 			<Label text="Select Class:" class="sapUiSmallMarginTop" required="true"/>
-			<Select id="classSelect" width="100%" items="{classModel>/ClassList}">
-				<core:Item key="{classModel>CLASS_ID}" text="{classModel>CLASS_TITLE}"/>
-			</Select>
+			<Input
+				id="classInput"
+				width="100%"
+				placeholder="Click search icon to select class..."
+				showValueHelp="true"
+				valueHelpRequest=".onClassValueHelp"
+				valueHelpOnly="false"
+				value="{selectedClass>/displayText}"
+				required="true"
+				editable="true"/>
 		</VBox>
 		<beginButton>
 			<Button text="Proceed" type="Emphasized" press="onConfirmCancelOnBehalf"/>
