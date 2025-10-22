@@ -1,0 +1,15 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core">
+	<SelectDialog
+		id="subordinateValueHelpDialog"
+		title="Select Subordinate"
+		noDataText="No subordinates found"
+		search="onSubordinateSearch"
+		confirm="onSubordinateConfirm"
+		cancel="onSubordinateCancel"
+		items="{subordinateModel>/EmployeeList}">
+		<StandardListItem
+			title="{subordinateModel>EmpEnglishName}"
+			description="{= 'Badge: ' + ${subordinateModel>EmpPernr} + ' | ' + ${subordinateModel>email}}"
+			type="Active"/>
+	</SelectDialog>
+</core:FragmentDefinition>

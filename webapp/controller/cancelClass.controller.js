@@ -120,7 +120,91 @@ sap.ui.define([
 		// 	});
 		// },
 
+		// ========== Value Help Handlers ==========
+
+		onSubordinateValueHelp: function () {
+			var that = this;
+
+			// Create Value Help dialog if not exists
+			if (!this._subordinateValueHelpDialog) {
+				this._subordinateValueHelpDialog = sap.ui.xmlfragment(
+					"cancelclass.cancelclass.fragment.SubordinateValueHelp",
+					this
+				);
+				this.getView().addDependent(this._subordinateValueHelpDialog);
+			}
+
+			// Get subordinates from the existing model
+			var oModel = this._onBehalfSubordinateDialog.getModel("subordinateModel");
+			this._subordinateValueHelpDialog.setModel(oModel, "subordinateModel");
+
+			// Open the dialog
+			this._subordinateValueHelpDialog.open();
+		},
+
+		onSubordinateSearch: function (oEvent) {
+			var sValue = oEvent.getParameter("value");
+			var oFilter = new Filter({
+				filters: [
+					new Filter("EmpPernr", FilterOperator.Contains, sValue),
+					new Filter("EmpEnglishName", FilterOperator.Contains, sValue),
+					new Filter("email", FilterOperator.Contains, sValue)
+				],
+				and: false
+			});
+			var oBinding = oEvent.getSource().getBinding("items");
+			oBinding.filter([oFilter]);
+		},
+
+		onSubordinateConfirm: function (oEvent) {
+			var oSelectedItem = oEvent.getParameter("selectedItem");
+			if (oSelectedItem) {
+				var oContext = oSelectedItem.getBindingContext("subordinateModel");
+				var oEmployee = oContext.getObject();
+
+				// Set selected subordinate in input field
+				var oInput = sap.ui.getCore().byId("subordinateInput");
+				var sDisplayText = oEmployee.EmpPernr + " - " + oEmployee.EmpEnglishName;
+
+				// Create/Update model for selected subordinate
+				if (!this._onBehalfSubordinateDialog.getModel("selectedSubordinate")) {
+					this._onBehalfSubordinateDialog.setModel(new JSONModel(), "selectedSubordinate");
+				}
+				this._onBehalfSubordinateDialog.getModel("selectedSubordinate").setData({
+					EmpPernr: oEmployee.EmpPernr,
+					EmpEnglishName: oEmployee.EmpEnglishName,
+					displayText: sDisplayText
+				});
+
+				// Load classes for selected subordinate
+				this._loadClassesForSubordinate(oEmployee.EmpPernr);
+			}
+		},
+
+		onSubordinateCancel: function () {
+			// Dialog closes automatically
+		},
+
+		_loadClassesForSubordinate: function (sEmpId) {
+			if (!sEmpId) return;
+
+			sEmpId = sEmpId.replace(/^0+/, '');
+
+			BusinessEventService.getClassByEmployee(sEmpId).then(function (oData) {
+				var aClasses = (oData && oData.d && oData.d.results) ? oData.d.results : [];
+				sap.ui.getCore().byId("classSelect").setModel(new JSONModel({
+					ClassList: aClasses
+				}), "classModel");
+			}).catch(function (err) {
+				console.error("Error loading classes", err);
+				sap.m.MessageToast.show("Failed to load classes for subordinate.");
+			});
+		},
+
+		// ========== Legacy Handlers (Deprecated) ==========
+
 		onSubordinateChange: function (oEvent) {
+			// This is now deprecated - replaced by Value Help
 			var sEmpId = oEvent.getSource().getSelectedKey();
 			if (!sEmpId) return;
 
@@ -150,8 +234,13 @@ sap.ui.define([
 		},
 
 		onConfirmCancelOnBehalf: function () {
-			var sEmployeeId = sap.ui.getCore().byId("subordinateSelect").getSelectedKey();
+			// Get selected subordinate from Value Help
+			var oSelectedSubModel = this._onBehalfSubordinateDialog.getModel("selectedSubordinate");
+			var sEmployeeId = oSelectedSubModel ? oSelectedSubModel.getProperty("/EmpPernr") : null;
+
+			// Get selected class
 			var sClassId = sap.ui.getCore().byId("classSelect").getSelectedKey();
+
 			if (sEmployeeId && sClassId) {
 				sEmployeeId = sEmployeeId.replace(/^0+/, '');
 

@@ -1,11 +1,17 @@
 <core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core">
 	<Dialog id="CreateOnBehalfDialog" title="Cancel Class On Behalf" draggable="true" resizable="true">
 		<VBox class="sapUiSmallMargin">
-			<Label text="Select Subordinate:"/>
-			<Select id="subordinateSelect" width="100%" items="{subordinateModel>/EmployeeList}" change="onSubordinateChange">
-				<core:Item key="{subordinateModel>EmpPernr}" text="{= ${subordinateModel>EmpPernr} + ' - ' + ${subordinateModel>EmpEnglishName} }"/>
-			</Select>
-			<Label text="Select Class:" class="sapUiSmallMarginTop"/>
+			<Label text="Select Subordinate:" required="true"/>
+			<Input
+				id="subordinateInput"
+				width="100%"
+				placeholder="Search subordinate by ID or name..."
+				showValueHelp="true"
+				valueHelpRequest="onSubordinateValueHelp"
+				value="{selectedSubordinate>/displayText}"
+				required="true"
+				editable="false"/>
+			<Label text="Select Class:" class="sapUiSmallMarginTop" required="true"/>
 			<Select id="classSelect" width="100%" items="{classModel>/ClassList}">
 				<core:Item key="{classModel>CLASS_ID}" text="{classModel>CLASS_TITLE}"/>
 			</Select>

@@ -44,54 +44,39 @@ sap.ui.define([], function () {
 		},
 
 		// Mock subordinates for manager (in the format expected by the controller)
+		// Simulating large dataset (100+ employees) to test Value Help search
 		subordinates: {
 			EmployeeHierarchySet: {
-				EmployeeHierarchy: [
-					{
-						EmpPernr: "107120",
-						EmpEnglishName: "Jane Doe",
-						employeeId: "107120",
-						badgeNo: "107120",
-						firstName: "Jane",
-						lastName: "Doe",
-						fullName: "Jane Doe",
-						name: "Jane Doe",
-						email: "jane.doe@example.com"
-					},
-					{
-						EmpPernr: "107121",
-						EmpEnglishName: "Mike Johnson",
-						employeeId: "107121",
-						badgeNo: "107121",
-						firstName: "Mike",
-						lastName: "Johnson",
-						fullName: "Mike Johnson",
-						name: "Mike Johnson",
-						email: "mike.johnson@example.com"
-					},
-					{
-						EmpPernr: "107122",
-						EmpEnglishName: "Sarah Williams",
-						employeeId: "107122",
-						badgeNo: "107122",
-						firstName: "Sarah",
-						lastName: "Williams",
-						fullName: "Sarah Williams",
-						name: "Sarah Williams",
-						email: "sarah.williams@example.com"
-					},
-					{
-						EmpPernr: "107123",
-						EmpEnglishName: "Ahmed Hassan",
-						employeeId: "107123",
-						badgeNo: "107123",
-						firstName: "Ahmed",
-						lastName: "Hassan",
-						fullName: "Ahmed Hassan",
-						name: "Ahmed Hassan",
-						email: "ahmed.hassan@example.com"
+				EmployeeHierarchy: (function() {
+					var employees = [];
+					var firstNames = ["John", "Jane", "Mike", "Sarah", "Ahmed", "Maria", "David", "Emma", "Alex", "Lisa",
+									  "Robert", "Emily", "James", "Anna", "Michael", "Sophia", "William", "Olivia", "Richard", "Isabella"];
+					var lastNames = ["Smith", "Johnson", "Williams", "Brown", "Jones", "Garcia", "Miller", "Davis", "Rodriguez", "Martinez",
+									 "Hernandez", "Lopez", "Gonzalez", "Wilson", "Anderson", "Thomas", "Taylor", "Moore", "Jackson", "Martin"];
+
+					// Generate 100 mock subordinates
+					for (var i = 0; i < 100; i++) {
+						var empId = String(107120 + i);
+						var firstName = firstNames[i % firstNames.length];
+						var lastName = lastNames[Math.floor(i / firstNames.length) % lastNames.length];
+						var fullName = firstName + " " + lastName;
+						var email = firstName.toLowerCase() + "." + lastName.toLowerCase() + "@example.com";
+
+						employees.push({
+							EmpPernr: empId,
+							EmpEnglishName: fullName,
+							employeeId: empId,
+							badgeNo: empId,
+							firstName: firstName,
+							lastName: lastName,
+							fullName: fullName,
+							name: fullName,
+							email: email
+						});
 					}
-				]
+
+					return employees;
+				})()
 			}
 		},
 
