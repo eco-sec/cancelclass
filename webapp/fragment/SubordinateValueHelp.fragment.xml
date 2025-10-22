@@ -9,7 +9,7 @@
 		items="{subordinateModel>/EmployeeList}">
 		<StandardListItem
 			title="{subordinateModel>EmpEnglishName}"
-			description="{= 'Badge: ' + ${subordinateModel>EmpPernr} + ' | ' + ${subordinateModel>email}}"
+			description="{= 'Badge: ' + ${subordinateModel>EmpPernr} + ' | ' + ${subordinateModel>EmpEmailId}}"
 			type="Active"/>
 	</SelectDialog>
 </core:FragmentDefinition>

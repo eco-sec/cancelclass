@@ -158,7 +158,7 @@ sap.ui.define([
 				filters: [
 					new Filter("EmpPernr", FilterOperator.Contains, sValue),
 					new Filter("EmpEnglishName", FilterOperator.Contains, sValue),
-					new Filter("email", FilterOperator.Contains, sValue)
+					new Filter("EmpEmailId", FilterOperator.Contains, sValue)
 				],
 				and: false
 			});

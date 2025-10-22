@@ -65,6 +65,7 @@ sap.ui.define([], function () {
 						employees.push({
 							EmpPernr: empId,
 							EmpEnglishName: fullName,
+							EmpEmailId: email,
 							employeeId: empId,
 							badgeNo: empId,
 							firstName: firstName,
