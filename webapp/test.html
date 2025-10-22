@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Cancel Class - Local Testing</title>
+	<script
+		id="sap-ui-bootstrap"
+		src="https://openui5.hana.ondemand.com/resources/sap-ui-core.js"
+		data-sap-ui-theme="sap_belize"
+		data-sap-ui-resourceroots='{
+			"cancelclass.cancelclass": "./"
+		}'
+		data-sap-ui-compatVersion="edge"
+		data-sap-ui-async="true"
+		data-sap-ui-frameOptions="trusted">
+	</script>
+	<script>
+		sap.ui.getCore().attachInit(function () {
+			// Display testing banner
+			console.log("%c========================================", "color: #0a6ed1; font-weight: bold");
+			console.log("%c  LOCAL TESTING MODE ENABLED", "color: #0a6ed1; font-weight: bold");
+			console.log("%c  Mock data is being used", "color: #0a6ed1");
+			console.log("%c========================================", "color: #0a6ed1; font-weight: bold");
+
+			// Create and display component
+			new sap.ui.core.ComponentContainer({
+				height : "100%",
+				name : "cancelclass.cancelclass"
+			}).placeAt("content");
+		});
+	</script>
+	<style>
+		html, body, #content {
+			height: 100%;
+			margin: 0;
+			padding: 0;
+		}
+
+		/* Testing banner */
+		body::before {
+			content: "LOCAL TESTING MODE - Using Mock Data";
+			display: block;
+			background: #0a6ed1;
+			color: white;
+			text-align: center;
+			padding: 5px;
+			font-size: 12px;
+			font-weight: bold;
+			position: fixed;
+			top: 0;
+			left: 0;
+			right: 0;
+			z-index: 9999;
+		}
+
+		#content {
+			padding-top: 30px;
+		}
+	</style>
+</head>
+<body class="sapUiBody">
+	<div id="content"></div>
+</body>
+</html>

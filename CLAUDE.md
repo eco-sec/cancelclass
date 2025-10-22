@@ -34,6 +34,25 @@ This is a **SAP UI5 web application** for managing training class cancellations 
 - **XSJS (JavaScript Server-Side)** - Server-side logic
 - **User API Service** - Current user information retrieval
 
+## Local Development with Mock Data
+
+This application supports **complete local testing without backend dependencies** using a jQuery AJAX interception pattern.
+
+### Quick Start
+```bash
+npm install
+npm start
+# Opens http://localhost:8080 with full mock data
+```
+
+### Mock Server Documentation
+- **[MOCK_SERVER_GUIDE.md](./MOCK_SERVER_GUIDE.md)** - Complete guide for reusing mock pattern in other apps
+- **[LOCAL_TESTING.md](./LOCAL_TESTING.md)** - Local testing scenarios and verification
+- **[TESTING_GUIDE.md](./TESTING_GUIDE.md)** - Comprehensive testing workflows
+- **[QUICK_START.md](./QUICK_START.md)** - Quick reference guide
+
+The mock server implementation can be **copied to any SAP WebIDE/UI5 application** for local development.
+
 ## Project Structure
 
 ```
@@ -42,6 +61,9 @@ cancelclass/
 │   ├── Component.js                  # UI5 Component initialization (entry point)
 │   ├── index.html                    # HTML bootstrap file
 │   ├── manifest.json                 # Application descriptor and configuration
+│   ├── localService/                 # ✅ Mock server for local development
+│   │   ├── mockdata.js               # Mock data definitions
+│   │   └── mockserver.js             # jQuery AJAX interceptor
 │   ├── controller/
 │   │   └── cancelClass.controller.js # Main controller (313 lines)
 │   ├── view/

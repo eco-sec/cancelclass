@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Mock Server Test</title>
+	<script
+		id="sap-ui-bootstrap"
+		src="https://openui5.hana.ondemand.com/resources/sap-ui-core.js"
+		data-sap-ui-theme="sap_belize"
+		data-sap-ui-resourceroots='{"cancelclass.cancelclass": "./"}'
+		data-sap-ui-libs="sap.m"
+		data-sap-ui-compatVersion="edge"
+		data-sap-ui-async="true"
+		data-sap-ui-oninit="module:cancelclass/cancelclass/test-init">
+	</script>
+	<style>
+		body {
+			font-family: Arial, sans-serif;
+			padding: 20px;
+			background: #f5f5f5;
+		}
+		.test-result {
+			background: white;
+			padding: 15px;
+			margin: 10px 0;
+			border-radius: 5px;
+			border-left: 4px solid #0a6ed1;
+		}
+		h1 {
+			color: #0a6ed1;
+		}
+	</style>
+</head>
+<body>
+	<h1>Mock Server Test Page</h1>
+	<p>Open browser console (F12) to see detailed logs</p>
+
+	<div class="test-result">
+		<h3>Test 1: User API</h3>
+		<div id="result1">⏳ Testing...</div>
+	</div>
+
+	<div class="test-result">
+		<h3>Test 2: Employee API</h3>
+		<div id="result2">⏳ Testing...</div>
+	</div>
+
+	<div class="test-result">
+		<h3>Test 3: Picklist API</h3>
+		<div id="result3">⏳ Testing...</div>
+	</div>
+</body>
+</html>

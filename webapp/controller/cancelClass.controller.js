@@ -24,19 +24,25 @@ sap.ui.define([
 		fetchCurrentUser: function () {
 			var oUserModel = new JSONModel();
 			var that = this;
+
+			// Set default username for local testing (in case API fails)
+			that.username = "107119";
+
 			oUserModel.loadData("/services/userapi/currentUser");
 			oUserModel.attachRequestCompleted(function (oEvent) {
 				if (oEvent.getParameter("success")) {
-					var sCurrentUserId = oUserModel.getData().name;
-					that.username =  107119;//93305; //sCurrentUserId;//sCurrentUserId; //100851; // 100851;//sCurrentUserId; // sCurrentUserId; // 118825; // 45466;//sCurrentUserId; //"45466"; //"119185"; // sCurrentUserId;//"45466"; //
+					var oData = oUserModel.getData();
+					var sCurrentUserId = oData.name || "107119";
+					that.username = sCurrentUserId;
+					console.log("✅ User loaded:", sCurrentUserId);
 					this.fetchEmployeeData(sCurrentUserId);
 				} else {
-					console.error("Error retrieving user info");
+					console.error("Error retrieving user info - using default username:", that.username);
 				}
 			}.bind(this));
 			oUserModel.attachRequestFailed(function () {
-				console.error("Failed to load current user data.");
-			});
+				console.error("Failed to load current user data - using default username:", that.username);
+			}.bind(this));
 		},
 
 		fetchEmployeeData: function (sEmployeeId) {},

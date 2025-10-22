@@ -1,1 +1,57 @@
+# Build output
 /dist/
+/target/
+
+# Dependency directories
+node_modules/
+bower_components/
+
+# SAP WebIDE / Business Application Studio
+.che/
+.gen/
+.user.project.json
+sap-ui-cachebuster-info.json
+
+# IDE / Editor specific
+.vscode/
+.idea/
+*.iml
+.project
+.settings/
+.classpath
+
+# OS specific
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Local environment files
+.env
+.env.local
+.env.*.local
+
+# Test coverage
+coverage/
+.nyc_output/
+
+# Temporary files
+*.tmp
+*.temp
+.tmp/
+.cache/
+
+# Package lock files (optional - uncomment if you want to ignore)
+# package-lock.json
+# yarn.lock
+
+# Claude Code local settings
+.claude/settings.local.json
