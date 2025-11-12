@@ -44,13 +44,8 @@
 		</VBox>
 		<beginButton>
 			<Button id="cancelClassButton" text="Cancel Class" type="Reject" press="onCancelClassConfirm"
-				visible="{= ${workflow>/IS_ON_BEHALF} === true }" enabled="{workflow>/ENABLE_CANCEL_BUTTON}"/>
+				enabled="{workflow>/ENABLE_CANCEL_BUTTON}"/>
 		</beginButton>
-		<endButton>
-			<Button text="Close" press="onCloseWorkflowDialog"/>
-		</endButton>
-		<Text id="cancelInfoText" text="Please contact your supervisor or training coordinator to cancel this class."
-			visible="{= ${workflow>/IS_ON_BEHALF} === false }" class="sapUiSmallMarginTop sapUiSmallMarginBottom sapUiTinyMargin"/>
 		<endButton>
 			<Button text="Close" press="onCloseWorkflowDialog"/>
 		</endButton>

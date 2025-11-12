@@ -42,6 +42,19 @@ sap.ui.define([
 					shouldMock = true;
 				}
 
+				// Mock Employee Details API
+				else if (url.indexOf("/cpi/employee/details") > -1) {
+					console.log("✅ Mocking: Employee Details API");
+					var employeeIdMatch = url.match(/employeeId=(\d+)/);
+					var employeeId = employeeIdMatch ? employeeIdMatch[1] : "107119";
+					mockData = oMockData.employees[employeeId] || {
+						employeeId: employeeId,
+						name: "Employee " + employeeId,
+						email: "employee" + employeeId + "@example.com"
+					};
+					shouldMock = true;
+				}
+
 				// Mock Subordinates API
 				else if (url.indexOf("/cpi/employee/getSubordinate") > -1 || url.indexOf("/cpi/tc/getSubordinate") > -1) {
 					console.log("✅ Mocking: Subordinates API");
@@ -82,10 +95,17 @@ sap.ui.define([
 					shouldMock = true;
 				}
 
-				// Mock Cancel Class
+				// Mock Cancel Class (old API)
 				else if (url.indexOf("/cpi/LMS/cancelComplete") > -1) {
 					console.log("✅ Mocking: Cancel Class API");
 					mockData = oMockData.cancelClassResponse;
+					shouldMock = true;
+				}
+
+				// Mock Create Cancellation Request (new API)
+				else if (url.indexOf("/cpi/cancellation/createApprovalRequest") > -1) {
+					console.log("✅ Mocking: Create Cancellation Request API");
+					mockData = oMockData.createCancellationResponse;
 					shouldMock = true;
 				}
 

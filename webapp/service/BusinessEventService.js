@@ -246,6 +246,53 @@ sap.ui.define([
 					reject(new Error("Business event creation failed."));
 				});
 			});
+		},
+
+		/**
+		 * Initiate cancellation workflow by sending full workflow data to CPI
+		 * @param {object} oWorkflowData - Full workflow data from WorkflowLogView
+		 * @returns {Promise} A promise that resolves with the API response
+		 */
+		createCancellationRequest: function (oWorkflowData) {
+			return new Promise(function (resolve, reject) {
+				var oModel = new sap.ui.model.json.JSONModel();
+
+				// Clean the data: remove __metadata and UI-specific fields
+				var oCleanData = {};
+				var aExcludedFields = [
+					"__metadata",
+					"FORMATTED_CLASS_START_DATE",
+					"FORMATTED_CLASS_END_DATE",
+					"DAYS_LEFT",
+					"CANCEL_REASON",
+					"ENABLE_CANCEL_BUTTON",
+					"IS_ON_BEHALF",
+					"IS_MY_CLASS"
+				];
+
+				// Copy only backend fields (exclude metadata and UI-specific fields)
+				for (var key in oWorkflowData) {
+					if (oWorkflowData.hasOwnProperty(key) && aExcludedFields.indexOf(key) === -1) {
+						oCleanData[key] = oWorkflowData[key];
+					}
+				}
+
+				oModel.loadData("/cpi/cancellation/createApprovalRequest", JSON.stringify(oCleanData), true, "POST", false, false, {
+					"Content-Type": "application/json"
+				});
+
+				oModel.attachRequestCompleted(function () {
+					if (oModel.getData()) {
+						resolve(oModel.getData());
+					} else {
+						reject(new Error("Failed to create cancellation request."));
+					}
+				});
+
+				oModel.attachRequestFailed(function () {
+					reject(new Error("Request to create cancellation failed."));
+				});
+			});
 		}
 
 	};

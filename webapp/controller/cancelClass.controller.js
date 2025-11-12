@@ -48,32 +48,66 @@ sap.ui.define([
 		fetchEmployeeData: function (sEmployeeId) {},
 
 		onCancelMyClass: function () {
+			console.log("🚀 onCancelMyClass called, username:", this.username);
 			var that = this;
-			if (!this._onBehalfDialog) {
-				this._onBehalfDialog = sap.ui.xmlfragment("cancelclass.cancelclass.fragment.CreateOnMyClassDialog", this);
-				this.getView().addDependent(this._onBehalfDialog);
+			if (!this._myClassDialog) {
+				console.log("📝 Creating My Class Dialog fragment");
+				this._myClassDialog = sap.ui.xmlfragment("cancelclass.cancelclass.fragment.CreateOnMyClassDialog", this);
+				this.getView().addDependent(this._myClassDialog);
 			}
 
-			// Set current user in the input field
-			// var oUserInput = sap.ui.getCore().byId("currentUserInput");
-			// if (oUserInput && this.username) {
-			// 	oUserInput.setValue(this.username);
-			// }
+			// Show busy indicator while loading data
+			sap.ui.core.BusyIndicator.show(0);
 
-			// // Load class list for current user
-			// var sEmpId = String(this.username).replace(/^0+/, '');
-			// BusinessEventService.getClassByEmployee(sEmpId).then(function (oData) {
-			// 	var aClasses = (oData && oData.d && oData.d.results) ? oData.d.results : [];
-			// 	var oClassModel = new JSONModel({
-			// 		ClassList: aClasses
-			// 	});
-			// 	sap.ui.getCore().byId("myClassSelect").setModel(oClassModel, "myClassModel");
-			// }).catch(function (err) {
-			// 	console.error("Error loading classes for current user", err);
-			// 	sap.m.MessageToast.show("Failed to load classes.");
-			// });
+			// Get current employee ID and load their information
+			var sEmpId = String(this.username).replace(/^0+/, '');
+			console.log("👤 Loading data for employee:", sEmpId);
 
-			this._onBehalfDialog.open();
+			// Load employee information and classes
+			EmployeeService.getEmployeeById(sEmpId)
+				.then(function(oEmployeeData) {
+					console.log("✅ Employee data loaded:", oEmployeeData);
+					// Initialize the model with employee info
+					var oMyClassModel = new JSONModel({
+						EMPLOYEE_ID: sEmpId,
+						EMPLOYEE_NAME: oEmployeeData.name || "Unknown",
+						EMPLOYEE_EMAIL: oEmployeeData.email || "",
+						ClassList: [],
+						selectedClassDisplay: "",
+						selectedClass: null
+					});
+					that._myClassDialog.setModel(oMyClassModel, "myClassModel");
+					console.log("📊 My Class Model initialized");
+
+					// Load approved classes for current user
+					return BusinessEventService.getClassByEmployee(sEmpId);
+				})
+				.then(function (oData) {
+					console.log("📚 Classes data received:", oData);
+					var aClasses = (oData && oData.d && oData.d.results) ? oData.d.results : [];
+					console.log("📋 Number of classes:", aClasses.length);
+
+					// Format class dates
+					aClasses.forEach(function(oClass) {
+						if (oClass.CLASS_START_DATE) {
+							oClass.FORMATTED_CLASS_START_DATE = that._formatDateString(oClass.CLASS_START_DATE);
+						}
+					});
+
+					// Update the model with classes
+					var oModel = that._myClassDialog.getModel("myClassModel");
+					oModel.setProperty("/ClassList", aClasses);
+					console.log("✅ ClassList updated in model, opening dialog");
+
+					that._myClassDialog.open();
+				})
+				.catch(function (err) {
+					console.error("❌ Error loading data for current user:", err);
+					sap.m.MessageToast.show("Failed to load your information or classes.");
+				})
+				.finally(function () {
+					sap.ui.core.BusyIndicator.hide();
+				});
 		}
 
 		,
@@ -131,6 +165,69 @@ sap.ui.define([
 		// },
 
 		// ========== Value Help Handlers ==========
+
+		onMyClassValueHelp: function () {
+			console.log("🔍 onMyClassValueHelp called - Opening Value Help");
+			var that = this;
+
+			// Create Value Help dialog if not exists (reuse the class value help)
+			if (!this._myClassValueHelpDialog) {
+				console.log("📝 Creating new Value Help dialog for My Class");
+				this._myClassValueHelpDialog = sap.ui.xmlfragment(
+					"myClassVH",
+					"cancelclass.cancelclass.fragment.ClassValueHelp",
+					{
+						onClassSearch: this.onMyClassSearch.bind(this),
+						onClassConfirm: this.onMyClassConfirm.bind(this),
+						onClassCancel: this.onMyClassCancel.bind(this)
+					}
+				);
+				this.getView().addDependent(this._myClassValueHelpDialog);
+			}
+
+			// Get classes from the existing model
+			var oModel = this._myClassDialog.getModel("myClassModel");
+			var aClasses = oModel.getProperty("/ClassList");
+			console.log("📚 Available classes:", aClasses ? aClasses.length : 0);
+
+			this._myClassValueHelpDialog.setModel(oModel, "classModel");
+
+			// Open the dialog
+			this._myClassValueHelpDialog.open();
+			console.log("✅ Value Help dialog opened");
+		},
+
+		onMyClassSearch: function (oEvent) {
+			var sValue = oEvent.getParameter("value");
+			var oFilter = new Filter({
+				filters: [
+					new Filter("CLASS_ID", FilterOperator.Contains, sValue),
+					new Filter("CLASS_TITLE", FilterOperator.Contains, sValue)
+				],
+				and: false
+			});
+			var oBinding = oEvent.getSource().getBinding("items");
+			oBinding.filter([oFilter]);
+		},
+
+		onMyClassConfirm: function (oEvent) {
+			var oSelectedItem = oEvent.getParameter("selectedItem");
+			if (oSelectedItem) {
+				var oContext = oSelectedItem.getBindingContext("classModel");
+				var oClass = oContext.getObject();
+
+				// Set selected class in the model
+				var oModel = this._myClassDialog.getModel("myClassModel");
+				var sDisplayText = oClass.CLASS_ID + " - " + oClass.CLASS_TITLE;
+
+				oModel.setProperty("/selectedClassDisplay", sDisplayText);
+				oModel.setProperty("/selectedClass", oClass);
+			}
+		},
+
+		onMyClassCancel: function () {
+			// Dialog closes automatically
+		},
 
 		onSubordinateValueHelp: function () {
 			var that = this;
@@ -293,15 +390,24 @@ sap.ui.define([
 		},
 
 		onConfirmOnMyClass: function () {
-			var sClassId = sap.ui.getCore().byId("myClassSelect").getSelectedKey();
-			var sEmployeeId = this.username;
+			var oModel = this._myClassDialog.getModel("myClassModel");
+			var oSelectedClass = oModel.getProperty("/selectedClass");
 
-			if (sClassId && sEmployeeId) {
-				BusinessEventService.getWorkflowReportByClassAndEmployee(sClassId, sEmployeeId)
-					.then(this._handleWorkflowResult.bind(this, this._onBehalfDialog))
-					.catch(this._handleWorkflowError);
-			} else {
-				sap.m.MessageToast.show("Please select a Class.");
+			if (!oSelectedClass) {
+				sap.m.MessageToast.show("Please select a class.");
+				return;
+			}
+
+			// Close the dialog and open workflow details
+			this._myClassDialog.close();
+
+			// Pass the full class data to the workflow details dialog
+			this._openWorkflowDetailsDialogForMyClass(oSelectedClass);
+		},
+
+		onCancelMyClassDialog: function () {
+			if (this._myClassDialog) {
+				this._myClassDialog.close();
 			}
 		},
 
@@ -409,6 +515,54 @@ sap.ui.define([
 
 		,
 
+		_openWorkflowDetailsDialogForMyClass: function (oWorkflowData) {
+			if (!this._workflowDialog) {
+				this._workflowDialog = sap.ui.xmlfragment("cancelclass.cancelclass.fragment.WorkflowDetailsDialog", this);
+				this.getView().addDependent(this._workflowDialog);
+			}
+
+			var oFormattedData = Object.assign({}, oWorkflowData);
+
+			// Format dates
+			if (oWorkflowData.CLASS_START_DATE) {
+				oFormattedData.FORMATTED_CLASS_START_DATE = this._formatDateString(oWorkflowData.CLASS_START_DATE);
+			}
+			if (oWorkflowData.CLASS_END_DATE) {
+				oFormattedData.FORMATTED_CLASS_END_DATE = this._formatDateString(oWorkflowData.CLASS_END_DATE);
+			}
+
+			// Calculate days left and eligibility
+			if (oWorkflowData.CLASS_START_DATE) {
+				var iDaysLeft = this._calculateDaysLeft(oWorkflowData.CLASS_START_DATE);
+				oFormattedData.DAYS_LEFT = iDaysLeft;
+				var iCutoffDays = (oWorkflowData.TRAINING_TYPE_ID === "1" || oWorkflowData.TRAINING_TYPE_ID === "2") ? 5 : 10;
+				if (iDaysLeft < 0) {
+					oFormattedData.CANCEL_REASON = "Class Already Started";
+					oFormattedData.ENABLE_CANCEL_BUTTON = false;
+				} else if (iDaysLeft <= iCutoffDays) {
+					oFormattedData.CANCEL_REASON = "Cancellation Period Expired";
+					oFormattedData.ENABLE_CANCEL_BUTTON = false;
+				} else {
+					oFormattedData.CANCEL_REASON = "Eligible for Cancellation";
+					oFormattedData.ENABLE_CANCEL_BUTTON = true;
+				}
+			}
+
+			// Mark this as "My Class" flow (not on behalf)
+			oFormattedData.IS_ON_BEHALF = false;
+			oFormattedData.IS_MY_CLASS = true;
+
+			var oModel = new JSONModel(oFormattedData);
+			this._workflowDialog.setModel(oModel, "workflow");
+			this._workflowDialog.bindElement({
+				path: "/",
+				model: "workflow"
+			});
+			this._workflowDialog.open();
+		}
+
+		,
+
 		_formatDateString: function (sRawDate) {
 			if (!sRawDate) return "";
 
@@ -454,32 +608,49 @@ sap.ui.define([
 
 		onCancelClassConfirm: function () {
 			var oModel = this._workflowDialog.getModel("workflow");
-			var sClassId = oModel.getProperty("/CLASS_ID");
-			var sEmployeeId = oModel.getProperty("/EMPLOYEE_ID");
-
-			// Get cancellation reason from ComboBox
-			var sCancellationReason = sap.ui.getCore().byId("cancelReasonComboBox").getSelectedKey();
-
-			// Determine user type based on which dialog is open
-			var sUserType = (this._onBehalfSubordinateDialog && this._onBehalfSubordinateDialog.isOpen()) ? "admin" : "user";
-			var sAdminId = this.username; // assuming logged-in user is the acting admin
+			var oWorkflowData = oModel.getData();
+			var bIsMyClass = oModel.getProperty("/IS_MY_CLASS");
 
 			// ✅ Show Busy Indicator
 			sap.ui.core.BusyIndicator.show(0);
 
-			BusinessEventService.cancelClass(sClassId, sEmployeeId, sAdminId, sUserType, sCancellationReason)
-				.then(function () {
-					sap.m.MessageToast.show("Class cancelled successfully.");
-					this._workflowDialog.close();
-				}.bind(this))
-				.catch(function (oError) {
-					console.error(oError.message);
-					sap.m.MessageToast.show("Failed to cancel class.");
-				})
-				.finally(function () {
-					// ✅ Hide Busy Indicator
-					sap.ui.core.BusyIndicator.hide();
-				});
+			// Check if this is "My Class" flow or "On Behalf" flow
+			if (bIsMyClass) {
+				// Use new API for "My Class" flow - send full workflow data
+				BusinessEventService.createCancellationRequest(oWorkflowData)
+					.then(function (oResponse) {
+						sap.m.MessageToast.show("Cancellation request submitted successfully.");
+						this._workflowDialog.close();
+						console.log("Cancellation request response:", oResponse);
+					}.bind(this))
+					.catch(function (oError) {
+						console.error("Failed to submit cancellation request:", oError.message);
+						sap.m.MessageToast.show("Failed to submit cancellation request.");
+					})
+					.finally(function () {
+						sap.ui.core.BusyIndicator.hide();
+					});
+			} else {
+				// Use old API for "On Behalf" flow
+				var sClassId = oModel.getProperty("/CLASS_ID");
+				var sEmployeeId = oModel.getProperty("/EMPLOYEE_ID");
+				var sCancellationReason = sap.ui.getCore().byId("cancelReasonComboBox").getSelectedKey();
+				var sUserType = (this._onBehalfSubordinateDialog && this._onBehalfSubordinateDialog.isOpen()) ? "admin" : "user";
+				var sAdminId = this.username;
+
+				BusinessEventService.cancelClass(sClassId, sEmployeeId, sAdminId, sUserType, sCancellationReason)
+					.then(function () {
+						sap.m.MessageToast.show("Class cancelled successfully.");
+						this._workflowDialog.close();
+					}.bind(this))
+					.catch(function (oError) {
+						console.error(oError.message);
+						sap.m.MessageToast.show("Failed to cancel class.");
+					})
+					.finally(function () {
+						sap.ui.core.BusyIndicator.hide();
+					});
+			}
 		}
 
 		,

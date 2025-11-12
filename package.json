@@ -1,19 +1,49 @@
 {
   "name": "cancelclass",
-  "version": "0.0.1",
-  "description": "",
+  "version": "1.0.0",
+  "description": "SAP UI5 application for managing training class cancellations in LMS - supports both self-cancellation and manager delegation",
+  "author": "SEC LMS Team",
+  "license": "UNLICENSED",
+  "keywords": [
+    "SAP UI5",
+    "Fiori",
+    "LMS",
+    "Training Management",
+    "Class Cancellation"
+  ],
   "devDependencies": {
     "@ui5/cli": "1.13.0",
     "@sap/ui5-builder-webide-extension": "1.0.x"
   },
   "scripts": {
     "start": "ui5 serve --open",
-    "build": "ui5 build --clean-dest --include-task=generateManifestBundle generateCachebusterInfo"
+    "serve": "ui5 serve",
+    "build": "ui5 build --clean-dest --include-task=generateManifestBundle generateCachebusterInfo",
+    "build:opt": "ui5 build self-contained --clean-dest --all",
+    "lint": "eslint webapp",
+    "test": "echo 'Run tests in browser: /test/testsuite.qunit.html'",
+    "deploy": "npm run build && echo 'Deploy dist folder to SAP BTP'"
   },
   "ui5": {
     "dependencies": [
       "@sap/ui5-builder-webide-extension"
     ]
   },
-  "private": "true"
+  "sapuxLayer": "CUSTOMER_BASE",
+  "engines": {
+    "node": ">=12.0.0",
+    "npm": ">=6.0.0"
+  },
+  "config": {
+    "mockserver": {
+      "enabled": true,
+      "description": "Mock server for local development - intercepts all API calls"
+    },
+    "backend": {
+      "hana": "/lmsproject/hana",
+      "cpi": "/cpi",
+      "userapi": "/services/userapi"
+    }
+  },
+  "private": true
 }
