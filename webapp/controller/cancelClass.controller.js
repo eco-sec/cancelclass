@@ -611,6 +611,12 @@ sap.ui.define([
 			var oWorkflowData = oModel.getData();
 			var bIsMyClass = oModel.getProperty("/IS_MY_CLASS");
 
+			// ✅ Get the user-selected cancellation reason from ComboBox
+			var sCancellationReason = sap.ui.getCore().byId("cancelReasonComboBox").getSelectedKey();
+
+			// ✅ Add the cancellation reason to workflow data
+			oWorkflowData.USER_CANCEL_REASON = sCancellationReason || "Work Commitments";
+
 			// ✅ Show Busy Indicator
 			sap.ui.core.BusyIndicator.show(0);
 

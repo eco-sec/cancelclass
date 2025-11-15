@@ -277,6 +277,11 @@ sap.ui.define([
 					}
 				}
 
+				// ✅ Ensure USER_CANCEL_REASON is included in the payload
+				if (oWorkflowData.USER_CANCEL_REASON) {
+					oCleanData.CANCEL_REASON = oWorkflowData.USER_CANCEL_REASON;
+				}
+
 				oModel.loadData("/cpi/cancellation/createApprovalRequest", JSON.stringify(oCleanData), true, "POST", false, false, {
 					"Content-Type": "application/json"
 				});
