@@ -15,6 +15,33 @@ sap.ui.define([
 		// Username and password
 
 		/**
+		 * Converts SAP date format /Date(ms)/ to YYYYMMDD string format
+		 * @param {string} sapDate - Date in SAP format like "/Date(1779408000000)/"
+		 * @returns {string} Date in YYYYMMDD format like "20250601"
+		 */
+		_convertSapDateToYYYYMMDD: function (sapDate) {
+			if (!sapDate || typeof sapDate !== "string") {
+				return "";
+			}
+
+			// Extract timestamp from /Date(ms)/ format
+			var match = sapDate.match(/\/Date\((\d+)\)\//);
+			if (!match) {
+				return "";
+			}
+
+			var timestamp = parseInt(match[1], 10);
+			var date = new Date(timestamp);
+
+			// Format as YYYYMMDD
+			var year = date.getFullYear();
+			var month = String(date.getMonth() + 1).padStart(2, "0");
+			var day = String(date.getDate()).padStart(2, "0");
+
+			return year + month + day;
+		},
+
+		/**
 		 * Encodes the username and password in base64 format for basic authentication.
 		 * @returns {string} Base64 encoded authorization header value.
 		 */
@@ -275,6 +302,15 @@ sap.ui.define([
 					if (oWorkflowData.hasOwnProperty(key) && aExcludedFields.indexOf(key) === -1) {
 						oCleanData[key] = oWorkflowData[key];
 					}
+				}
+
+				// ✅ Convert date fields from SAP format to YYYYMMDD format (keep same field names)
+				if (oCleanData.CLASS_START_DATE) {
+					oCleanData.CLASS_START_DATE = BusinessEventService._convertSapDateToYYYYMMDD(oCleanData.CLASS_START_DATE);
+				}
+
+				if (oCleanData.CLASS_END_DATE) {
+					oCleanData.CLASS_END_DATE = BusinessEventService._convertSapDateToYYYYMMDD(oCleanData.CLASS_END_DATE);
 				}
 
 				// ✅ Ensure USER_CANCEL_REASON is included in the payload
